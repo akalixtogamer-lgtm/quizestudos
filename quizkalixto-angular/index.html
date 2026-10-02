@@ -1,0 +1,281 @@
+<title>Quiz Kalixto Angular 20</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sora:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: sidebar de sumário fixa + coluna única de leitura. Dark-first com tema claro opcional. DS Kalixto. */
+:root{
+  --bg:#050505; --bg2:#0c0a14; --surface:rgba(255,255,255,.04); --surface-2:rgba(255,255,255,.07);
+  --fg:#f3f1fa; --fg-dim:#a9a4bd; --line:rgba(255,255,255,.10);
+  --purple:#7B2EFF; --pink:#FF2DAA; --blue:#00D9FF;
+  --accent:#00D9FF; --accent-2:#FF2DAA; --link:#5fe6ff;
+  --code-bg:#0a0812; --code-fg:#e7e3f7;
+  --ok:#35e0a1; --warn:#ffb84d; --bad:#ff5c7a;
+  --grad:linear-gradient(90deg,#7B2EFF,#FF2DAA,#00D9FF);
+  --f-display:'Sora','Inter',system-ui,sans-serif; --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --hl-kw:#ff7ad0; --hl-str:#7ff0c4; --hl-com:#7d7898; --hl-num:#ffb84d; --hl-fn:#6fdcff; --hl-tag:#c39bff; --hl-attr:#ffd479;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#ffffff; --bg2:#f6f3ff; --surface:rgba(123,46,255,.05); --surface-2:rgba(123,46,255,.09);
+  --fg:#14102a; --fg-dim:#5b5675; --line:rgba(20,16,42,.13);
+  --accent:#7B2EFF; --accent-2:#d4147f; --link:#5a1fd1;
+  --code-bg:#f3efff; --code-fg:#24203d; --ok:#0b8f63; --warn:#a85f00; --bad:#c4163a;
+  --hl-kw:#b0127a; --hl-str:#0b7a55; --hl-com:#7d7898; --hl-num:#a85f00; --hl-fn:#0a6f8c; --hl-tag:#5a1fd1; --hl-attr:#8a5a00;
+  color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#ffffff; --bg2:#f6f3ff; --surface:rgba(123,46,255,.05); --surface-2:rgba(123,46,255,.09);
+  --fg:#14102a; --fg-dim:#5b5675; --line:rgba(20,16,42,.13);
+  --accent:#7B2EFF; --accent-2:#d4147f; --link:#5a1fd1;
+  --code-bg:#f3efff; --code-fg:#24203d; --ok:#0b8f63; --warn:#a85f00; --bad:#c4163a;
+  --hl-kw:#b0127a; --hl-str:#0b7a55; --hl-com:#7d7898; --hl-num:#a85f00; --hl-fn:#0a6f8c; --hl-tag:#5a1fd1; --hl-attr:#8a5a00;
+  color-scheme:light}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.0625rem/1.75 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-underline-offset:3px}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+/* topo */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{font:800 1rem var(--f-display);letter-spacing:.14em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none}
+.topbar .sp{flex:1}
+.progress-pill{font:500 .78rem var(--f-mono);color:var(--fg-dim)}
+.btn{font:600 .85rem var(--f-body);color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:.4rem .9rem;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+#menuBtn{display:none}
+.bar{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--grad)}
+
+.shell{display:grid;grid-template-columns:19rem minmax(0,1fr);max-width:82rem;margin:0 auto}
+nav.toc{position:sticky;top:3.4rem;align-self:start;max-height:calc(100vh - 3.4rem);overflow:auto;padding:1.5rem 1rem 3rem 1.25rem;border-right:1px solid var(--line);font-size:.9rem;line-height:1.4}
+nav.toc h2{font:700 .7rem var(--f-display);letter-spacing:.18em;text-transform:uppercase;color:var(--fg-dim);margin:1.2rem 0 .5rem}
+nav.toc a{display:block;color:var(--fg-dim);text-decoration:none;padding:.32rem .6rem;border-radius:8px;border-left:2px solid transparent}
+nav.toc a:hover{color:var(--fg);background:var(--surface)}
+nav.toc a.on{color:var(--fg);background:var(--surface-2);border-left-color:var(--accent-2)}
+nav.toc a i{font:500 .72rem var(--f-mono);font-style:normal;color:var(--accent);margin-right:.5rem}
+
+main{padding:0 1.25rem 6rem;min-width:0}
+.col{max-width:46rem;margin:0 auto}
+
+/* capa */
+.cover{position:relative;overflow:hidden;padding:5rem 1.25rem 4rem;border-bottom:1px solid var(--line);background:radial-gradient(60rem 28rem at 85% -10%,rgba(123,46,255,.35),transparent 60%),radial-gradient(40rem 24rem at 0% 110%,rgba(255,45,170,.22),transparent 60%),var(--bg)}
+.cover::after{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(180deg,#000,transparent 75%);opacity:.5;pointer-events:none}
+.cover .col{position:relative;z-index:1}
+.kicker{font:700 .74rem var(--f-display);letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.cover h1{font:800 clamp(2.4rem,7vw,4.4rem)/1.04 var(--f-display);margin:.8rem 0 1rem;text-wrap:balance}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:flow 9s linear infinite}
+@keyframes flow{to{background-position:200% 0}}
+.cover p.lead{font-size:1.2rem;color:var(--fg-dim);max-width:38rem}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.6rem}
+.chip{font:500 .78rem var(--f-mono);padding:.3rem .7rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg-dim)}
+.chip b{color:var(--fg);font-weight:500}
+
+/* capítulos */
+section.ch{padding-top:4.5rem}
+.ch-head{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
+.ch-num{font:700 .78rem var(--f-mono);color:var(--accent-2);letter-spacing:.12em}
+h2.t{font:800 clamp(1.7rem,4.2vw,2.4rem)/1.12 var(--f-display);margin:0;text-wrap:balance}
+h3{font:700 1.3rem/1.25 var(--f-display);margin:2.4rem 0 .6rem;text-wrap:balance}
+h4{font:700 1rem var(--f-display);margin:1.6rem 0 .3rem;color:var(--accent)}
+p{margin:.8rem 0}
+ul,ol{padding-left:1.3rem;margin:.8rem 0}
+li{margin:.3rem 0}
+li::marker{color:var(--accent-2)}
+code{font:500 .88em var(--f-mono);background:var(--surface-2);padding:.12em .4em;border-radius:6px;overflow-wrap:anywhere}
+.src{display:inline-flex;gap:.4rem;align-items:center;font:500 .72rem var(--f-mono);padding:.22rem .6rem;border-radius:999px;border:1px solid var(--line);color:var(--fg-dim);background:var(--surface);width:fit-content}
+.src.base{border-color:color-mix(in srgb,var(--accent) 55%,transparent);color:var(--accent)}
+.src.plus{border-color:color-mix(in srgb,var(--accent-2) 55%,transparent);color:var(--accent-2)}
+
+/* código */
+.code{margin:1.1rem 0;border:1px solid var(--line);border-radius:12px;background:var(--code-bg);overflow:hidden}
+.code header{display:flex;align-items:center;gap:.6rem;padding:.45rem .8rem;border-bottom:1px solid var(--line);font:500 .74rem var(--f-mono);color:var(--fg-dim)}
+.code header .dots{display:flex;gap:.3rem}.code header .dots i{width:.55rem;height:.55rem;border-radius:50%;background:var(--purple);opacity:.8}
+.code header .dots i:nth-child(2){background:var(--pink)}.code header .dots i:nth-child(3){background:var(--blue)}
+.code header .sp{flex:1}
+.code header button{font:500 .72rem var(--f-mono);color:var(--fg-dim);background:none;border:1px solid var(--line);border-radius:6px;padding:.15rem .5rem;cursor:pointer}
+.code header button:hover{color:var(--fg);border-color:var(--accent)}
+.code pre{margin:0;padding:.9rem 1rem;overflow-x:auto;font:400 .84rem/1.65 var(--f-mono);color:var(--code-fg);tab-size:2}
+.code pre code{background:none;padding:0;font:inherit;overflow-wrap:normal}
+.hljs-keyword,.hljs-built_in,.hljs-literal,.hljs-selector-tag{color:var(--hl-kw)}
+.hljs-string,.hljs-regexp,.hljs-template-variable{color:var(--hl-str)}
+.hljs-comment,.hljs-quote{color:var(--hl-com);font-style:italic}
+.hljs-number,.hljs-symbol{color:var(--hl-num)}
+.hljs-title,.hljs-title.function_,.hljs-function{color:var(--hl-fn)}
+.hljs-title.class_,.hljs-type,.hljs-name,.hljs-tag{color:var(--hl-tag)}
+.hljs-attr,.hljs-attribute,.hljs-selector-class,.hljs-variable,.hljs-params{color:var(--hl-attr)}
+.hljs-meta{color:var(--hl-com)}
+
+/* avisos */
+.note{margin:1.4rem 0;padding:1rem 1.1rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.note strong.lbl{display:block;font:700 .72rem var(--f-display);letter-spacing:.16em;text-transform:uppercase;margin-bottom:.25rem}
+.note.dica{border-color:color-mix(in srgb,var(--blue) 50%,transparent)}.note.dica .lbl{color:var(--accent)}
+.note.atencao{border-color:color-mix(in srgb,var(--warn) 55%,transparent)}.note.atencao .lbl{color:var(--warn)}
+.note.erro{border-color:color-mix(in srgb,var(--bad) 55%,transparent)}.note.erro .lbl{color:var(--bad)}
+.note.analogia{border-color:color-mix(in srgb,var(--pink) 50%,transparent)}.note.analogia .lbl{color:var(--accent-2)}
+.note p:first-of-type{margin-top:0}.note p:last-child{margin-bottom:0}
+
+/* tabelas */
+.tw{overflow-x:auto;margin:1.2rem 0;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:30rem;font-size:.92rem;line-height:1.5}
+th,td{text-align:left;padding:.65rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:700 .72rem var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim);background:var(--surface)}
+tr:last-child td{border-bottom:0}
+
+/* árvore + diagrama */
+pre.tree{font:400 .85rem/1.6 var(--f-mono);background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:1rem;overflow-x:auto;margin:1.1rem 0}
+.flow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:1.2rem 0}
+.flow span{padding:.5rem .85rem;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font:600 .85rem var(--f-body)}
+.flow em{font-style:normal;color:var(--accent-2);font-weight:700}
+
+/* exercícios */
+.ex{margin:1.6rem 0;border:1px solid color-mix(in srgb,var(--purple) 60%,transparent);border-radius:14px;padding:1.1rem 1.2rem;background:linear-gradient(135deg,rgba(123,46,255,.14),rgba(255,45,170,.06))}
+.ex h4{margin-top:0;color:var(--fg)}
+.ex h4::before{content:"EXERCÍCIO";font:700 .68rem var(--f-display);letter-spacing:.18em;color:var(--accent-2);display:block;margin-bottom:.3rem}
+details{margin:.8rem 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+details>summary{cursor:pointer;padding:.6rem .9rem;font-weight:600;font-size:.92rem;list-style:none}
+details>summary::before{content:"▸ ";color:var(--accent-2)}details[open]>summary::before{content:"▾ "}
+details>div{padding:0 .9rem .9rem}
+
+/* checklist/quiz */
+.check{list-style:none;padding:0}.check li{display:flex;gap:.6rem;align-items:flex-start}
+.check input{margin-top:.45rem;accent-color:var(--purple);width:1.05rem;height:1.05rem}
+.quiz{display:grid;gap:1rem;margin:1.4rem 0}
+.q{border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;background:var(--surface)}
+.q p{margin:.2rem 0 .7rem;font-weight:600}
+.q button.opt{display:block;width:100%;text-align:left;margin:.35rem 0;padding:.55rem .8rem;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);font:400 .94rem var(--f-body);cursor:pointer}
+.q button.opt:hover:not(:disabled){border-color:var(--accent)}
+.q button.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.q .why{display:none;font-size:.9rem;color:var(--fg-dim);margin-top:.5rem}.q.done .why{display:block}
+#score{font:700 1rem var(--f-display)}
+
+/* biblioteca */
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:.8rem;margin:1rem 0}
+.lib a{display:block;padding:.85rem 1rem;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-decoration:none;color:var(--fg);min-width:0}
+.lib a:hover{border-color:var(--accent);background:var(--surface-2)}
+.lib a b{display:block;font:700 .95rem var(--f-display);color:var(--fg)}
+.lib a span{display:block;font-size:.84rem;color:var(--fg-dim);line-height:1.4;margin-top:.15rem}
+.lib a small{display:block;font:500 .7rem var(--f-mono);color:var(--accent);margin-top:.35rem;overflow-wrap:anywhere}
+
+footer{margin-top:5rem;padding-top:2rem;border-top:1px solid var(--line);font-size:.9rem;color:var(--fg-dim)}
+
+@media (max-width:60rem){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  #menuBtn{display:inline-block}
+  nav.toc{position:fixed;inset:3.4rem 0 0 0;max-height:none;z-index:25;background:var(--bg);transform:translateX(-100%);transition:transform .25s;border-right:0}
+  nav.toc.open{transform:none}
+  .cover{padding-top:3.5rem}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.grad{animation:none}nav.toc{transition:none}}
+@media print{.topbar,nav.toc{display:none}.shell{display:block}}
+</style>
+<div class="topbar">
+  <a class="brand" href="#topo">KALIXTO</a>
+  <span class="sp"></span>
+  <span class="progress-pill" id="prog">0 / 16</span>
+  <button class="btn" id="themeBtn" aria-label="Alternar tema">Tema</button>
+</div>
+
+<main id="topo" style="padding:0">
+<header class="cover">
+  <div class="col">
+    <div class="kicker">Quiz Kalixto · Angular 20</div>
+    <h1>Teste o que você <span class="grad">aprendeu</span></h1>
+    <p class="lead">16 perguntas de múltipla escolha sobre a Apostila Master de Angular 20. Responda, leia a explicação e veja o placar por capítulo.</p>
+    <div class="meta">
+      <span class="chip"><b>Perguntas</b> 16</span>
+      <span class="chip"><b>Formato</b> múltipla escolha</span>
+      <a class="chip" id="back" href="https://akalixtogamer-lgtm.github.io/apostilas/apostilakalixto-angular/" style="text-decoration:none"><b>←</b> Voltar para a apostila</a>
+    </div>
+  </div>
+</header>
+
+<div class="col" style="padding:2rem 1.25rem 6rem">
+  <div class="note"><strong class="lbl">Como funciona</strong><p>Clique em uma alternativa para responder. A resposta correta fica verde e a explicação aparece. Use o filtro para treinar um capítulo por vez. Você pode refazer quantas vezes quiser.</p></div>
+  <div class="meta" id="filters" role="group" aria-label="Filtrar por capítulo" style="margin:1rem 0"></div>
+  <p><span id="score">0 de 16 corretas</span></p>
+  <div class="quiz" id="quiz"></div>
+  <div class="note dica" id="result" hidden><strong class="lbl">Resultado</strong><p id="resText"></p><p><button class="btn" id="retry" type="button">Refazer o quiz</button></p></div>
+  <footer>
+    <p><strong class="grad" style="font-family:var(--f-display)">KALIXTO</strong> · Professor · Programador · Gamer<br>
+    Quiz baseado na Apostila Master Angular 20. Conteúdo-base: Prof. Vitor H. V. Reis (Senac RJ).</p>
+  </footer>
+</div>
+</main>
+
+<script>
+(function(){
+  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  var root=document.documentElement, tb=document.getElementById('themeBtn');
+  var saved=store.get('kx-theme'); if(saved) root.setAttribute('data-theme',saved);
+  tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+    var nx=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nx); store.set('kx-theme',nx);
+  });
+
+  /* [capítulo, pergunta, alternativas, índice da correta, explicação] */
+  var Q=[
+    ['Ambiente','Qual comando instala o Angular CLI na versão 20?',['npm install angular@20','npm install -g @angular/cli@20','ng install cli 20','node install @angular/cli'],1,'O pacote é @angular/cli, a flag -g instala globalmente e @20 fixa a versão.'],
+    ['Ambiente','O comando ng não é reconhecido depois de instalar o CLI no laboratório. Qual a causa mais provável?',['O Angular não suporta Windows','A pasta Roaming\\npm do usuário não está no PATH','O Node está na versão LTS','O VS Code está aberto'],1,'Pacotes globais ficam em AppData\\Roaming\\npm. Sem essa pasta no PATH, o comando não é encontrado. Feche e reabra o CMD depois de ajustar.'],
+    ['Ambiente','O que significa a sigla LTS na versão do Node.js?',['Light Test Server','Long Term Support','Local Type Script','Latest Tested Setup'],1,'LTS é a versão com suporte estendido, a indicada para instalar.'],
+    ['Primeiro projeto','Qual comando sobe o servidor de desenvolvimento e abre o navegador?',['ng build -o','ng start','ng serve -o','npm open'],2,'ng serve compila e serve em http://localhost:4200. A flag -o abre o navegador.'],
+    ['Primeiro projeto','A porta 4200 está ocupada. Como subir o projeto em outra porta?',['ng serve --port 4300','ng serve --change 4300','ng port 4300','Não é possível'],0,'A opção --port define a porta do servidor de desenvolvimento.'],
+    ['Componentes','Como o componente App passa a exibir o componente Cadastro?',['Basta usar <app-cadastro> no HTML','Importar a classe, colocá-la em imports e usar o seletor','Renomear o arquivo para app.html','Executar ng serve --cadastro'],1,'Componentes standalone só usam o que está em imports.'],
+    ['Componentes','Qual comando gera um componente chamado cadastro?',['ng g c cadastro','ng new cadastro','ng make component cadastro','npm create cadastro'],0,'ng generate component (ou ng g c) cria a pasta com .ts, .html, .css e .spec.ts.'],
+    ['Templates','Qual é a forma moderna de repetir itens em um template?',['*ngFor','@for (item of lista; track item.id)','[for]="lista"','v-for'],1,'O bloco @for substitui o *ngFor, que está deprecado na v20. O track é obrigatório.'],
+    ['Templates','Qual sintaxe liga o evento de clique a um método da classe?',['[click]="salvar()"','(click)="salvar()"','{{ click: salvar() }}','@click="salvar"'],1,'Event binding usa parênteses. Colchetes são property binding.'],
+    ['Signals','Em um signal chamado total, como se lê o valor atual no template?',['total','total.value','total()','$total'],2,'Signals são funções: total() lê e total.set()/update() escrevem.'],
+    ['Serviços e HTTP','Qual método HTTP é o indicado para criar um novo recurso?',['GET','POST','DELETE','HEAD'],1,'POST cria. GET lê, PUT/PATCH alteram, DELETE remove.'],
+    ['Serviços e HTTP','Como um componente pede um serviço ao Angular, na forma moderna?',['new UsuarioService()','inject(UsuarioService)','require(UsuarioService)','import UsuarioService as svc'],1,'A função inject() devolve a instância gerenciada pelo Angular (injeção de dependência).'],
+    ['Formulários','Qual par liga o HTML ao FormGroup em um formulário reativo?',['[formGroup] e formControlName','ngModel e ngForm','[(value)] e (change)','formName e controlId'],0,'[formGroup] no form e formControlName em cada campo.'],
+    ['Formulários','Qual módulo precisa estar em imports para usar formulários reativos?',['FormsModule','HttpClientModule','ReactiveFormsModule','RouterModule'],2,'ReactiveFormsModule. O FormsModule é o do [(ngModel)].'],
+    ['Regex','Na regex de senha, o que faz o trecho (?=.*\\d)?',['Exige que a senha comece com número','Exige que exista pelo menos um dígito em algum lugar','Proíbe números','Define o tamanho da senha'],1,'É um lookahead: confere que existe um dígito sem consumir caracteres.'],
+    ['Rotas','Qual elemento marca o lugar onde o componente da rota atual aparece?',['<router-view>','<router-outlet />','<ng-route>','<app-page>'],1,'O RouterOutlet exibe o componente correspondente à URL.']
+  ];
+  var caps=['Todos'].concat(Q.map(function(q){return q[0]}).filter(function(c,i,a){return a.indexOf(c)===i}));
+  var qz=document.getElementById('quiz'), sc=document.getElementById('score'), prog=document.getElementById('prog');
+  var res=document.getElementById('result'), resText=document.getElementById('resText');
+  var state=[], filter='Todos';
+
+  function render(){
+    qz.innerHTML='';
+    Q.forEach(function(q,i){
+      if(filter!=='Todos'&&q[0]!==filter)return;
+      var d=document.createElement('div'); d.className='q'; d.id='q'+i;
+      var p=document.createElement('p'); p.textContent=(i+1)+'. '+q[1]; d.appendChild(p);
+      var tag=document.createElement('span'); tag.className='src'; tag.textContent=q[0]; tag.style.marginBottom='.6rem'; d.insertBefore(tag,p);
+      var st=state[i];
+      q[2].forEach(function(o,j){
+        var b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=o;
+        if(st!==undefined){ b.disabled=true; if(j===q[3])b.classList.add('right'); else if(j===st)b.classList.add('wrong'); }
+        b.addEventListener('click',function(){ if(state[i]!==undefined)return; state[i]=j; update(); render(); });
+        d.appendChild(b);
+      });
+      var w=document.createElement('div'); w.className='why'; w.textContent=q[4]; d.appendChild(w);
+      if(st!==undefined)d.classList.add('done');
+      qz.appendChild(d);
+    });
+  }
+  function update(){
+    var ok=0,done=0;
+    Q.forEach(function(q,i){ if(state[i]!==undefined){done++; if(state[i]===q[3])ok++;} });
+    sc.textContent=ok+' de '+Q.length+' corretas';
+    prog.textContent=done+' / '+Q.length;
+    if(done===Q.length){
+      var por={}; Q.forEach(function(q,i){por[q[0]]=por[q[0]]||[0,0]; por[q[0]][1]++; if(state[i]===q[3])por[q[0]][0]++;});
+      resText.textContent='Você acertou '+ok+' de '+Q.length+'. Por capítulo: '+Object.keys(por).map(function(k){return k+' '+por[k][0]+'/'+por[k][1]}).join(' · ')+'.';
+      res.hidden=false;
+    } else res.hidden=true;
+  }
+  var fb=document.getElementById('filters');
+  caps.forEach(function(c){
+    var b=document.createElement('button'); b.type='button'; b.className='btn'; b.textContent=c;
+    b.addEventListener('click',function(){ filter=c; [].forEach.call(fb.children,function(x){x.style.borderColor=x===b?'var(--accent)':''}); render(); });
+    if(c==='Todos')b.style.borderColor='var(--accent)';
+    fb.appendChild(b);
+  });
+  document.getElementById('retry').addEventListener('click',function(){ state=[]; update(); render(); scrollTo(0,0); });
+  update(); render();
+})();
+</script>
